@@ -29,8 +29,11 @@ Future<void> main() async {
   FirebaseMessaging fcm = FirebaseMessaging.instance;
   await fcm.setAutoInitEnabled(true);
 
-  // final fcmToken = await messaging.getToken();
-  // print("FCMToken $fcmToken");
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    if (message.notification != null) {
+      print('Notification received with title ${message.notification!.title}');
+    }
+  });
 
   await fcm.requestPermission(
     alert: true,

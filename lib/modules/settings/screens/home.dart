@@ -132,13 +132,23 @@ class _CMSSettings extends ConsumerWidget {
           },
         ),
         TextButton(
-            onPressed: () {
-              client.registerUserDevice().then((value) => showDialog(
-                  context: context,
-                  builder: (context) =>
-                      AlertDialog(content: Text(value.toString()))));
-            },
-            child: Text("reg notif"))
+          onPressed: () {
+            client.registerUserDevice().then((value) => showDialog(
+                context: context,
+                builder: (context) =>
+                    AlertDialog(content: Text(value.toString()))));
+          },
+          child: Text("reg notif"),
+        ),
+        TextButton(
+          onPressed: () {
+            client.unregisterUserDevice().then((value) => showDialog(
+                context: context,
+                builder: (context) =>
+                    AlertDialog(content: Text(value.toString()))));
+          },
+          child: Text("unreg notif"),
+        ),
       ],
     );
   }
