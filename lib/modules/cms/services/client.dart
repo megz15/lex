@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:lex/utils/http.dart';
@@ -132,5 +136,72 @@ class CMSClient {
       queryParameters: {'token': token},
     );
     return response.statusCode == 200;
+  }
+
+  Future<String> registerUserDevice() async {
+    final deviceInfoPlugin = DeviceInfoPlugin();
+    final deviceInfo = await deviceInfoPlugin.deviceInfo;
+    final deviceData = deviceInfo.data;
+
+    // Map a = deviceInfo.data;
+    // a.remove("systemFeatures");
+
+    String fcmToken = await FirebaseMessaging.instance.getToken() ?? "";
+
+    String platform;
+    if (kIsWeb) {
+      platform = "web";
+    } else {
+      if (Platform.isAndroid) {
+        platform = 'android';
+      } else if (Platform.isIOS) {
+        platform = 'ios';
+      } else if (Platform.isLinux) {
+        platform = 'linux';
+      } else if (Platform.isWindows) {
+        platform = 'windows';
+      } else if (Platform.isMacOS) {
+        platform = 'cringe';
+      } else {
+        platform = 'undefined';
+      }
+    }
+
+    final response = await dio.get(
+      _baseUrl,
+      queryParameters: {
+        'wsfunction': 'core_user_add_user_device',
+        'moodlewsrestformat': 'json',
+        'wstoken': token,
+        'appid': "com.thecomputerm.lex",
+        'name': deviceData['product'],
+        'model': deviceData['model'],
+        'platform': platform,
+        'version': '', //deviceData['version']
+        'pushid': fcmToken,
+        'uuid': deviceData['id'],
+      },
+    );
+
+    return response.data.toString();
+  }
+
+  Future<String> unregisterUserDevice() async {
+    final deviceInfoPlugin = DeviceInfoPlugin();
+    final deviceInfo = await deviceInfoPlugin.deviceInfo;
+    final deviceData = deviceInfo.data;
+
+    final response = await dio.get(
+      _baseUrl,
+      queryParameters: {
+        'wsfunction': 'core_user_remove_user_device',
+        'moodlewsrestformat': 'json',
+        'wstoken': token,
+        'appid': "com.thecomputerm.lex",
+        'uuid': deviceData['id'],
+      },
+    );
+
+    return response.data.toString();
   }
 }

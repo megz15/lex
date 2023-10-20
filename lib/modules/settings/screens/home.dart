@@ -112,6 +112,7 @@ class _CMSSettings extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final client = ref.watch(cmsClientProvider);
     final token = ref.watch(cmsTokenProvider);
     return SettingsTile(
       title: "CMS",
@@ -130,6 +131,14 @@ class _CMSSettings extends ConsumerWidget {
             ref.read(cmsTokenProvider.notifier).state = value;
           },
         ),
+        TextButton(
+            onPressed: () {
+              client.registerUserDevice().then((value) => showDialog(
+                  context: context,
+                  builder: (context) =>
+                      AlertDialog(content: Text(value.toString()))));
+            },
+            child: Text("reg notif"))
       ],
     );
   }
