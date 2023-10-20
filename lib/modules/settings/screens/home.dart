@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lex/modules/settings/widgets/tile.dart';
@@ -5,6 +7,7 @@ import 'package:lex/providers/cms.dart';
 import 'package:lex/providers/impartus.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:receive_intent/receive_intent.dart' as receive_intent;
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -148,6 +151,30 @@ class _CMSSettings extends ConsumerWidget {
                     AlertDialog(content: Text(value.toString()))));
           },
           child: Text("unreg notif"),
+        ),
+        TextButton(
+          onPressed: () {
+            Random random = Random();
+            int passport = random.nextInt(1000);
+
+            launchUrlString(
+              "https://cms.bits-hyderabad.ac.in/admin/tool/mobile/launch.php?service=moodle_mobile_app&oauthsso=1&passport=$passport&urlscheme=lectern",
+              mode: LaunchMode.externalApplication,
+            );
+
+            receive_intent.ReceiveIntent.receivedIntentStream
+                .listen((receive_intent.Intent? intent) {
+              String token = utf8
+                  .decode(base64Decode(intent!.data!.split("token=")[1]))
+                  .split(":::")[1];
+              // showDialog(
+              //   context: context,
+              //   builder: (context) => AlertDialog(content: Text(token)),
+              // );
+              ref.read(cmsTokenProvider.notifier).state = token;
+            });
+          },
+          child: const Text("Login with Google"),
         ),
       ],
     );
