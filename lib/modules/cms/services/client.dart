@@ -143,9 +143,6 @@ class CMSClient {
     final deviceInfo = await deviceInfoPlugin.deviceInfo;
     final deviceData = deviceInfo.data;
 
-    // Map a = deviceInfo.data;
-    // a.remove("systemFeatures");
-
     String fcmToken = await FirebaseMessaging.instance.getToken() ?? "";
 
     String platform;
@@ -183,7 +180,11 @@ class CMSClient {
       },
     );
 
-    return response.data.toString();
+    if (response.data.toString() == "[]") {
+      return "Registered for notifications successfully!";
+    } else {
+      return response.data[0][0]["message"].toString();
+    }
   }
 
   Future<String> unregisterUserDevice() async {
@@ -202,6 +203,10 @@ class CMSClient {
       },
     );
 
-    return response.data.toString();
+    if (response.data["removed"] == true) {
+      return "You won't be receiving notifications anymore";
+    } else {
+      return response.data["warnings"][0]["message"].toString();
+    }
   }
 }

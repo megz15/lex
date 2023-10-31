@@ -141,7 +141,7 @@ class _CMSSettings extends ConsumerWidget {
                 builder: (context) =>
                     AlertDialog(content: Text(value.toString()))));
           },
-          child: Text("reg notif"),
+          child: const Text("reg notif"),
         ),
         TextButton(
           onPressed: () {
@@ -150,7 +150,7 @@ class _CMSSettings extends ConsumerWidget {
                 builder: (context) =>
                     AlertDialog(content: Text(value.toString()))));
           },
-          child: Text("unreg notif"),
+          child: const Text("unreg notif"),
         ),
         TextButton(
           onPressed: () {
