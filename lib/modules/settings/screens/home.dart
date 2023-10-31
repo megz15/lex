@@ -120,34 +120,38 @@ class _CMSSettings extends ConsumerWidget {
     return SettingsTile(
       title: "CMS",
       children: [
-        Directionality(
-          textDirection: TextDirection.rtl,
-          child: ElevatedButton.icon(
-            icon: const Icon(Icons.login),
-            label: const Text("Login with Google"),
-            onPressed: () {
-              Random random = Random();
-              int passport = random.nextInt(1000);
+        Center(
+          child: Directionality(
+            textDirection: TextDirection.rtl,
+            child: ElevatedButton.icon(
+              icon: const Icon(Icons.login),
+              label: const Text("Login with Google"),
+              onPressed: () {
+                Random random = Random();
+                int passport = random.nextInt(1000);
 
-              launchUrlString(
-                "https://cms.bits-hyderabad.ac.in/admin/tool/mobile/launch.php?service=moodle_mobile_app&oauthsso=1&passport=$passport&urlscheme=lectern",
-                mode: LaunchMode.externalApplication,
-              );
+                launchUrlString(
+                  "https://cms.bits-hyderabad.ac.in/admin/tool/mobile/launch.php?service=moodle_mobile_app&oauthsso=1&passport=$passport&urlscheme=lectern",
+                  mode: LaunchMode.externalApplication,
+                );
 
-              receive_intent.ReceiveIntent.receivedIntentStream
-                  .listen((receive_intent.Intent? intent) {
-                String token = utf8
-                    .decode(base64Decode(intent!.data!.split("token=")[1]))
-                    .split(":::")[1];
-                // showDialog(
-                //   context: context,
-                //   builder: (context) => AlertDialog(content: Text(token)),
-                // );
-                ref.read(cmsTokenProvider.notifier).state = token;
-              });
-            },
+                receive_intent.ReceiveIntent.receivedIntentStream
+                    .listen((receive_intent.Intent? intent) {
+                  String token = utf8
+                      .decode(base64Decode(intent!.data!.split("token=")[1]))
+                      .split(":::")[1];
+                  showDialog(
+                    context: context,
+                    builder: (context) => const AlertDialog(
+                        content: Text("Successfully logged in!")),
+                  );
+                  ref.read(cmsTokenProvider.notifier).state = token;
+                });
+              },
+            ),
           ),
         ),
+        const SizedBox(height: 10),
         TextFormField(
           decoration: InputDecoration(
             prefixIcon: const Icon(Icons.token),
@@ -162,24 +166,32 @@ class _CMSSettings extends ConsumerWidget {
             ref.read(cmsTokenProvider.notifier).state = value;
           },
         ),
-        TextButton(
-          onPressed: () {
-            client.registerUserDevice().then((value) => showDialog(
-                context: context,
-                builder: (context) =>
-                    AlertDialog(content: Text(value.toString()))));
-          },
-          child: const Text("reg notif"),
-        ),
-        TextButton(
-          onPressed: () {
-            client.unregisterUserDevice().then((value) => showDialog(
-                context: context,
-                builder: (context) =>
-                    AlertDialog(content: Text(value.toString()))));
-          },
-          child: const Text("unreg notif"),
-        ),
+        const SizedBox(height: 20),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            ElevatedButton.icon(
+              icon: const Icon(Icons.notifications_active_outlined),
+              onPressed: () {
+                client.registerUserDevice().then((value) => showDialog(
+                    context: context,
+                    builder: (context) =>
+                        AlertDialog(content: Text(value.toString()))));
+              },
+              label: const Text("Register For Notifications"),
+            ),
+            ElevatedButton.icon(
+              icon: const Icon(Icons.notifications_off_outlined),
+              onPressed: () {
+                client.unregisterUserDevice().then((value) => showDialog(
+                    context: context,
+                    builder: (context) =>
+                        AlertDialog(content: Text(value.toString()))));
+              },
+              label: const Text("Unregister From Notifications"),
+            ),
+          ],
+        )
       ],
     );
   }
